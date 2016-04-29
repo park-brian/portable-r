@@ -1,3 +1,4 @@
+echo Please ensure you are running this in Git Bash or an equivalent shell
 
 rm -rf .tmp && mkdir .tmp && cd .tmp
 
