@@ -19,6 +19,7 @@ echo $'\n-- Removing .tmp directory --\n'
 cd .. && rm -rf .tmp
 
 echo $'\n-- Setting portable R library path --\n'
-echo ".First = function() { .libPaths(.Library) } >> app/etc/Rprofile.site
+echo ".First = function() { .libPaths(.Library) }" >> app/etc/Rprofile.site
 
-
+echo "cd app/bin/i386 && Rscript.exe ../../../source/app.R" > run.bat
+echo $'\n-- Finished setup. Please double-click on the run.bat file to start this application --\n'
