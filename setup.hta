@@ -52,8 +52,10 @@
 			// otherwise, set the installation directory to the one provided in the parameter
 			function browse() {
 
-				if (!arguments.length)
-					directory.active = ActiveX.Application.BrowseForFolder(0, "Select Installation Directory", 0, 0) || directory.default;
+				if (!arguments.length) {
+					directory.active = ActiveX.Application.BrowseForFolder(0, "Select Installation Directory", 5, 0).Self.Path || directory.default;
+					$('#directory').val(directory.active);
+				}
 
 				else
 					directory.active = arguments[0];
