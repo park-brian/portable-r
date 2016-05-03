@@ -159,8 +159,11 @@
 				// configure R
 				$('#output').html('Configuring R');
 				Utility.write(Utility.directory.active + '\\app\\etc\\RProfile.site', ['.First = function() .libPaths(.Library)']);
-				Utility.write(Utility.directory.source + '\\application.R', ['library(tcltk)', 'tk_messageBox(message = "Initialization Successful.")']);
 				Utility.write(Utility.directory.active + '\\run.bat', ['app\\bin\\i386\\Rscript.exe source\\application.R']);
+				Utility.write(Utility.directory.source + '\\application.R', 
+					[	'library(tcltk)', 
+						'print (sessionInfo(), locale = F)', 
+						'tk_messageBox(message = "Initialization Successful.")'	]);
 
 				$('#output').html('Finished installing portable R template');
 				$('#install').attr('disabled', false);
