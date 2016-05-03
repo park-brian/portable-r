@@ -116,14 +116,16 @@
 			}
 
 			// writes/appends text to a file
-			function write(filepath, string) {
+			function write(filepath, contents) {
 
 				if (ActiveX.FileSystem.FileExists(filepath))
 					var file = ActiveX.FileSystem.OpenTextFile(filepath, 8);
 				else
 					var file = ActiveX.FileSystem.CreateTextFile(filepath, 8);
 
-				file.writeLine(string);
+				for (index in contents)
+					file.writeLine(contents[index]);
+				
 				file.close();
 			}
 
@@ -152,9 +154,9 @@
 
 				// Configure R
 				$('#output').html('Configuring R');
-				utility.write(utility.directory.active + '\\app\\etc\\RProfile.site', '.First = function() .libPaths(.Library)');
-				utility.write(utility.directory.source + '\\application.R', 'library(tcltk);tk_messageBox(message = "Initialization Successful.")');
-				utility.write(utility.directory.active + '\\run.bat', 'app\\bin\\i386\\Rscript.exe source\\application.R');
+				utility.write(utility.directory.active + '\\app\\etc\\RProfile.site', ['.First = function() .libPaths(.Library)']);
+				utility.write(utility.directory.source + '\\application.R', ['library(tcltk)', 'tk_messageBox(message = "Initialization Successful.")']);
+				utility.write(utility.directory.active + '\\run.bat', ['app\\bin\\i386\\Rscript.exe source\\application.R']);
 
 				$('#output').html('Finished installing portable R template');
 				$('#install').attr('disabled', false);
