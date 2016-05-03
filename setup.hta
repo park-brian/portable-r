@@ -1,0 +1,192 @@
+<!doctype html>
+<html>
+
+<head>
+	<title>R Application Setup</title>
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+	<HTA:APPLICATION 
+		APPLICATIONNAME="R Application Installer"
+		SCROLL="no"
+		SINGLEINSTANCE="yes"
+	>
+
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/css/bootstrap.min.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.1/css/font-awesome.min.css">
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.3/jquery.slim.min.js"></script>
+
+	<script>
+		window.resizeTo(600, 240);
+
+		var ActiveX = (function() {
+			return {
+				Shell: new ActiveXObject('WScript.Shell'),
+				Application: new ActiveXObject('Shell.Application'),
+				FileSystem: new ActiveXObject('Scripting.FileSystemObject'),
+				Request: new ActiveXObject('WinHttp.WinHttpRequest.5.1'),
+				Stream: new ActiveXObject('ADODB.Stream')
+			}
+		})();
+
+		var utility = (function() {
+			
+			var output = $('#output');
+
+			var directory = {
+				default: ActiveX.Shell.CurrentDirectory + '\\application',
+				active: '',
+				source: '',
+				temp: ''
+			};
+
+			return {
+				browse:		browse,
+				download:	download,
+				unzip:		unzip,
+				directory:	directory,
+				extract: 	extract,
+				write: 		write
+			}
+
+			// if no arguments are provided, prompt the client for an installation directory
+			// otherwise, set the installation directory to the one provided in the parameter
+			function browse() {
+
+				if (!arguments.length)
+					directory.active = ActiveX.Application.BrowseForFolder(0, "Select Installation Directory", 0, 0) || directory.default;
+
+				else
+					directory.active = arguments[0];
+
+				directory.temp = directory.active + '\\.tmp';
+				directory.source = directory.active + '\\source';
+
+				for (key in directory) {
+					if (ActiveX.FileSystem.FolderExists(directory[key]))
+						ActiveX.FileSystem.DeleteFolder(directory[key]);
+					ActiveX.FileSystem.CreateFolder(directory[key]);
+				}
+			}
+
+			// downloads a file from the specified URL and places it in the temp directory
+			function download(url) {
+				$('#output').html('Downloading: ' + url + ' <i class="fa fa-circle-o-notch fa-spin" ></i>');
+
+				var filepath = directory.temp + '\\' + url.split('/').pop();
+
+				ActiveX.Request.Open('GET', url, true);
+				ActiveX.Request.Send();
+				ActiveX.Request.WaitForResponse();
+
+				ActiveX.Stream.Open();
+				ActiveX.Stream.Type = 1;
+				ActiveX.Stream.Write(ActiveX.Request.ResponseBody);
+				ActiveX.Stream.Position = 0;
+				ActiveX.Stream.SaveToFile(filepath, 2);
+				ActiveX.Stream.Close();
+
+				$('#output').html('Finished downloading: ' + ActiveX.FileSystem.GetFileName(filepath));
+				return filepath;
+			}
+
+			// unzips a file and places its contents in the temp directory
+			function unzip(filepath) {
+				$('#output').html('Unzipping: ' + ActiveX.FileSystem.GetFileName(filepath) + ' <i class="fa fa-circle-o-notch fa-spin" ></i>');
+
+				var archive = ActiveX.Application.NameSpace(filepath);
+				var temp = ActiveX.Application.NameSpace(directory.temp);
+
+				temp.CopyHere((archive.Items()), 4);
+
+				$('#output').html('Finished unzipping: ' + ActiveX.FileSystem.GetFileName(filepath));
+
+				return directory.temp;
+			}
+
+			// extracts an installation archive
+			function extract(executable, archive) {
+				$('#output').html('Extracting R <i class="fa fa-circle-o-notch fa-spin" ></i>');
+
+				ActiveX.Shell.Run(wrap(executable) + '-d ' + wrap(directory.active) + ' ' + wrap(archive), 8, true);
+				ActiveX.FileSystem.DeleteFolder(directory.temp);
+
+				$('#output').html('Finished extracting R');
+			}
+
+			// writes/appends text to a file
+			function write(filepath, string) {
+
+				if (ActiveX.FileSystem.FileExists(filepath))
+					var file = ActiveX.FileSystem.OpenTextFile(filepath, 8);
+				else
+					var file = ActiveX.FileSystem.CreateTextFile(filepath, 8);
+
+				file.writeLine(string);
+				file.close();
+			}
+
+			// wraps a string in double quotes (for paths with spaces)
+			function wrap(string) {
+				return '"' + string + '"';
+			}
+		})();
+
+		$(document).ready(function() {
+			$('#directory').val(utility.directory.default);
+			
+			$('#browse').click(utility.browse);
+			$('#install').click(function() {
+				$('#install').attr('disabled', true);
+				$('#install').text('Please wait...');
+
+				utility.browse($('#directory').val());
+
+				// Retrieve and extract R files
+				var r = utility.download('https://cran.r-project.org/bin/windows/base/R-3.2.5-win.exe');
+				var innoextract = utility.download('https://github.com/dscharrer/innoextract/releases/download/1.6/innoextract-1.6-windows.zip');
+				innoextract = utility.unzip(innoextract) + "\\innoextract.exe";
+				$('#output').html(innoextract);
+				utility.extract(innoextract, r);
+
+				// Configure R
+				$('#output').html('Configuring R');
+				utility.write(utility.directory.active + '\\app\\etc\\RProfile.site', '.First = function() .libPaths(.Library)');
+				utility.write(utility.directory.source + '\\application.R', 'library(tcltk);tk_messageBox(message = "Initialization Successful.")');
+				utility.write(utility.directory.active + '\\run.bat', 'app\\bin\\i386\\Rscript.exe source\\application.R');
+
+				$('#output').html('Finished installing portable R template');
+				$('#install').attr('disabled', false);
+				$('#install').text('Install');
+			})
+		})
+	</script>
+</head>
+
+<body>
+
+	<header class="navbar navbar-full navbar-default navbar-inverse">
+		<a class="navbar-brand" href="#">R Application Setup</a>
+	</header>
+
+	<div class="container">
+		<small>This application will be installed to: </small>
+
+		<div class="input-group">
+			<span class="input-group-btn">
+				<button id="browse" class="btn btn-default btn-sm" type="button" onclick="utility.browse()">Browse...</button>
+			</span>
+
+			<input id="directory" type="text" class="form-control input-sm" aria-describedby="directory">
+			
+			<span class="input-group-btn">
+				<button id="install" class="btn btn-primary btn-sm" type="button">Install</button>
+			</span>
+		</div>
+
+		<br>
+
+		<small id="output"></small>
+
+	</div>
+</body>
+</html>
