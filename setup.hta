@@ -55,7 +55,15 @@
 			function browse() {
 
 				if (!arguments.length) {
-					directory.active = ActiveX.Application.BrowseForFolder(0, "Select Installation Directory", 5, 0).Self.Path || directory.default;
+
+					var selected = ActiveX.Application.BrowseForFolder(0, "Select Installation Directory", 5, 0);
+
+					if (selected)
+						directory.active = selected.Self.Path;
+
+					else
+						directory.active = directory.default;
+
 					$('#directory').val(directory.active);
 				}
 
