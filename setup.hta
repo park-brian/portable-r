@@ -82,9 +82,11 @@
 
 			// downloads a file from the specified URL and places it in the temp directory
 			function download(url) {
-				$('#output').html('Downloading: ' + url + ' <i class="fa fa-circle-o-notch fa-spin" ></i>');
 
-				var filepath = directory.temp + '\\' + url.split('/').pop();
+				var file =  url.split('/').pop();
+				var filepath = directory.temp + '\\' + file;
+
+				$('#output').html('Downloading ' + file + ' <i class="fa fa-circle-o-notch fa-spin" ></i>');
 
 				ActiveX.Request.Open('GET', url, true);
 				ActiveX.Request.Send();
@@ -119,6 +121,7 @@
 			function extract(executable, archive) {
 				$('#output').html('Extracting R <i class="fa fa-circle-o-notch fa-spin" ></i>');
 
+				// wrap directories with double quotes
 				ActiveX.Shell.Run(wrap(executable) + '-d ' + wrap(directory.active) + ' ' + wrap(archive), 8, true);
 				ActiveX.FileSystem.DeleteFolder(directory.temp);
 
