@@ -163,7 +163,7 @@
 					Utility.browse($('#directory').val());
 
 					// retrieve and extract R files
-					var archive = Utility.download('https://cran.r-project.org/bin/windows/base/old/3.2.5/R-3.2.5-win.exe');
+					var archive = Utility.download('http://cran.us.r-project.org/bin/windows/base/old/3.3.0/R-3.3.0-win.exe');
 					var innoextract = Utility.download('https://github.com/dscharrer/innoextract/releases/download/1.6/innoextract-1.6-windows.zip');
 					innoextract = Utility.unzip(innoextract) + '\\innoextract.exe';
 					$('#output').html(innoextract);
