@@ -1,3 +1,19 @@
+
+#### Macros ####
+
+## Append line to end of file
+!macro AppendLine File String
+  FileOpen $4 "${File}" a
+  FileSeek $4 0 END
+  FileWrite $4 "$\r$\n"
+  FileWrite $4 "${String}"
+  FileWrite $4 "$\r$\n"
+  FileClose $4
+!macroend
+
+#### End Macros ####
+
+
 #### Default Values ####
 
 # Set application name
@@ -36,6 +52,9 @@ Page instfiles
 #### Installation ####
 Section "install"
 
+# Require 168.9 Mb
+AddSize 172974
+
 RMDir /r "$INSTDIR\app"
 RMDir /r "$INSTDIR\source"
 RMDir /r "$INSTDIR\tmp"
@@ -52,21 +71,19 @@ NSISdl::download http://constexpr.org/innoextract/files/innoextract-1.6/innoextr
 nsisunz::UnzipToLog /file "innoextract.exe" "$INSTDIR\tmp\innoextract-1.6-windows.zip" "$INSTDIR\tmp"
 nsExec::ExecToLog '"$INSTDIR\tmp\innoextract.exe" -d "$INSTDIR" "$INSTDIR\tmp\R-3.3.0-win.exe"'
 
-# Make R Portable
-FileOpen $4 "$INSTDIR\app\etc\RProfile.site" a
-FileSeek $4 0 END
-FileWrite $4 "$\r$\n"
-FileWrite $4 ".First = function() .libPaths(.Library)"
-FileWrite $4 "$\r$\n"
-FileClose $4
+# Remove temp directory
+RMDir /r "$INSTDIR\tmp"
+
+# Set defaults for R - portable library path/default repository
+!insertmacro AppendLine "$INSTDIR\app\etc\RProfile.site" ".First <- function() .libPaths(.Library)"
+!insertmacro AppendLine "$INSTDIR\app\etc\RProfile.site" "local({r <- getOption('repos'); r['CRAN'] <- 'http://cran.rstudio.com'; options(repos = r)})"
 
 # Copy Files
 setOutPath "$INSTDIR\source"
 file "resources\application.R"
 
-CreateShortCut "$INSTDIR\application.lnk" "$SYSDIR\cmd.exe" "/c start app\bin\i386\Rscript.exe source\application.R"
-
-# Remove temp directory
-RMDir /r "$INSTDIR\tmp"
+# Create application shortcut
+setOutPath "$INSTDIR"
+CreateShortCut "$INSTDIR\application.lnk" "$SYSDIR\cmd.exe" "/c start app\bin\Rscript.exe source\application.R"
 
 SectionEnd
