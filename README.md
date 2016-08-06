@@ -15,4 +15,4 @@ A sample application is included with this script that illustrates a possible us
 
 _Notes_
 
-> When executing plotting functions via RScript, output will be redirected to the pdf graphics device by default. In order to display plots in a separate window, the windows() device must be selected beforehand.
+> The installation file is created with NSIS, which is an open-source scriptable install system. To create an installer for your R application, clone this repository, overwrite the application.R file in the resources/source directory, update the configuration file with application-specific settings, and then rebuild the .exe with MakeNSISW. Let me know if you run into any issues!
