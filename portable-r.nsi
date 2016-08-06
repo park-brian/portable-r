@@ -79,7 +79,7 @@ RMDir /r "$INSTDIR\tmp"
 !insertmacro AppendLine "$INSTDIR\app\etc\RProfile.site" "local({r <- getOption('repos'); r['CRAN'] <- 'http://cran.rstudio.com'; options(repos = r)})"
 
 # Create application shortcut
-CreateShortCut "$INSTDIR\application.lnk" "$SYSDIR\cmd.exe" "/c start app\bin\Rscript.exe source\application.R"
+CreateShortCut "$INSTDIR\application.lnk" "%COMSPEC%" "/c start app\bin\Rscript.exe source\application.R"
 
 # Copy R source files
 setOutPath "$INSTDIR\source"
