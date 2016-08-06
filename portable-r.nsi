@@ -81,8 +81,9 @@ RMDir /r "$INSTDIR\tmp"
 # Create application shortcut
 CreateShortCut "$INSTDIR\application.lnk" "%COMSPEC%" "/c start app\bin\Rscript.exe source\application.R"
 
-# Copy R source files
-setOutPath "$INSTDIR\source"
-file "resources\application.R"
+# Copy R source Files
+setOutPath "$INSTDIR"
+File /r "resources\source"
+
 
 SectionEnd
