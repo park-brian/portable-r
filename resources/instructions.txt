@@ -1,0 +1,12 @@
+This program helps package R code so it can be distributed to users who may not have R installed.
+
+The installation script will: 
+
+1. Download and extract the contents of the R 3.3.0 installer
+2. Set the extracted instance of R to use a portable library path
+3. Create a template for your portable application in the source directory
+
+A sample application is included with this script that illustrates a possible use-case for this tool.
+
+The source code for this installation script is available at: 
+https://github.com/park-brian/portable-r
