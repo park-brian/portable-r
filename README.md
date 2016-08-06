@@ -4,10 +4,10 @@ This utility helps package R code so it can be distributed to users who may not 
 
 The installation script will: 
 
-1. Download and extract the contents of the R 3.3.0 installer for Windows
-2. Configure R to use a portable library path
-3. Create a template for your portable application in the source directory
-4. Create a .bat file to run the application template using Rscript
+1. Download [R 3.3.0 for Windows](https://cran.r-project.org/bin/windows/base/old/3.3.0/)
+2. Extract R from the installer using [innoextract](https://github.com/dscharrer/innoextract)
+3. Configure R to use a portable library path
+4. Create a portable application template in the source directory
 
 A sample application is included with this script that illustrates a possible use-case for this tool.
 
