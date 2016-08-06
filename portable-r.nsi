@@ -64,8 +64,7 @@ FileClose $4
 setOutPath "$INSTDIR\source"
 file "resources\application.R"
 
-setOutPath "$INSTDIR"
-file "resources\run.bat"
+CreateShortCut "$INSTDIR\application.lnk" "$SYSDIR\cmd.exe" "/c start app\bin\i386\Rscript.exe source\application.R"
 
 # Remove temp directory
 RMDir /r "$INSTDIR\tmp"
