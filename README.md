@@ -1,6 +1,6 @@
 ## portable-r
 
-This utility helps package R code so it can be distributed to users who may not have R installed. Please visit the [releases](https://github.com/park-brian/portable-r/releases) page to download this tool.
+This utility helps package applications written in R so they can be distributed to users who may not have R installed. Please visit the [releases](https://github.com/park-brian/portable-r/releases) page to download this tool.
 
 The installation script will: 
 
